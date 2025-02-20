@@ -77,6 +77,7 @@ model Company {
   Warehouse    Warehouse[]
   Product      Product[]
   Attribute    Attribute[]
+  Category     Category[]
 }
 
 model Branch {
@@ -130,12 +131,14 @@ model BranchWarehouse {
 }
 
 model Category {
-  id       String     @id
-  name     String
-  parentId String     @default("") @map("parent_id")
-  parent   Category?  @relation("CategoryParent", fields: [parentId], references: [id])
-  children Category[] @relation("CategoryParent")
-  Product  Product[]
+  id        String     @id
+  name      String
+  parentId  String     @default("") @map("parent_id")
+  parent    Category?  @relation("CategoryParent", fields: [parentId], references: [id])
+  children  Category[] @relation("CategoryParent")
+  Product   Product[]
+  company   Company    @relation(fields: [companyId], references: [id])
+  companyId String
 }
 
 model Product {
