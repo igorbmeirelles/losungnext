@@ -9,68 +9,68 @@ datasource db {
 }
 
 model User {
-  id           String         @id
-  companyId    String?
+  id           String         @id @map("id")
+  companyId    String?        @map("company_id")
   BoardMembers BoardMembers[]
   Customer     Customer[]
 }
 
 model Customer {
-  id         String   @id
-  firstName  String
-  lastName   String
-  phone      String
-  email      String
-  avatar     String
+  id         String   @id @map("id")
+  firstName  String   @map("first_name")
+  lastName   String   @map("last_name")
+  phone      String   @map("phone")
+  email      String   @map("email")
+  avatar     String   @map("avatar")
   location   Location @relation(fields: [locationId], references: [id])
   user       User?    @relation(fields: [userId], references: [id])
-  userId     String?
-  locationId String
-  createdAt  DateTime
-  updatedAt  DateTime
+  userId     String?  @map("user_id")
+  locationId String   @map("location_id")
+  createdAt  DateTime @map("created_at")
+  updatedAt  DateTime @map("updated_at")
   Order      Order[]
 }
 
 model Address {
-  id           String     @id
-  street       String
-  number       String
-  neighborhood String
-  city         String
-  country      String
-  createdAt    DateTime
+  id           String     @id @map("id")
+  street       String     @map("street")
+  number       String     @map("number")
+  neighborhood String     @map("neighborhood")
+  city         String     @map("city")
+  country      String     @map("country")
+  createdAt    DateTime   @map("created_at")
   location     Location[]
 }
 
 model Location {
-  id         String     @id
-  complement String?
-  number     String
-  addressId  String
-  createdAt  DateTime
-  updatedAt  DateTime
+  id         String     @id @map("id")
+  complement String?    @map("complement")
+  number     String     @map("number")
+  addressId  String     @map("address_id")
+  createdAt  DateTime   @map("created_at")
+  updatedAt  DateTime   @map("updated_at")
   addresses  Address    @relation(fields: [addressId], references: [id])
-  branchId   String?
+  branchId   String?    @map("branch_id")
   Branch     Branch?
   Customer   Customer[]
   Order      Order[]
 }
 
 model Supplier {
-  id        String    @id
-  name      String
-  createdAt DateTime
-  updatedAt DateTime
-  companyId String
+  id        String    @id @map("id")
+  name      String    @map("name")
+  createdAt DateTime  @map("created_at")
+  updatedAt DateTime  @map("updated_at")
+  companyId String    @map("company_id")
   company   Company   @relation(fields: [companyId], references: [id])
   Invoice   Invoice[]
 }
 
 model Company {
-  id           String         @id
-  name         String
-  createdAt    DateTime
-  updatedAt    DateTime
+  id           String         @id @map("id")
+  name         String         @map("name")
+  createdAt    DateTime       @map("created_at")
+  updatedAt    DateTime       @map("updated_at")
   supplier     Supplier[]
   branches     Branch[]
   BoardMembers BoardMembers[]
@@ -80,15 +80,15 @@ model Company {
 }
 
 model Branch {
-  id              String            @id
-  name            String
-  phone           String
+  id              String            @id @map("id")
+  name            String            @map("name")
+  phone           String            @map("phone")
   location        Location          @relation(fields: [locationId], references: [id])
-  locationId      String            @unique
-  companyId       String
-  isActive        Boolean
-  createdAt       DateTime
-  updatedAt       DateTime
+  locationId      String            @unique @map("location_id")
+  companyId       String            @map("company_id")
+  isActive        Boolean           @map("is_active")
+  createdAt       DateTime          @map("created_at")
+  updatedAt       DateTime          @map("updated_at")
   company         Company           @relation(fields: [companyId], references: [id])
   BoardMembers    BoardMembers[]
   BranchWarehouse BranchWarehouse[]
@@ -96,58 +96,59 @@ model Branch {
 }
 
 model BoardMembers {
-  id        String   @id
-  userId    String
-  isActive  Boolean
-  createdAt DateTime
-  updatedAt DateTime
+  id        String   @id @map("id")
+  userId    String   @map("user_id")
+  isActive  Boolean  @map("is_active")
+  createdAt DateTime @map("created_at")
+  updatedAt DateTime @map("updated_at")
   user      User     @relation(fields: [userId], references: [id])
-  companyId String
+  companyId String   @map("company_id")
   company   Company  @relation(fields: [companyId], references: [id])
-  branchId  String
+  branchId  String   @map("branch_id")
   branch    Branch   @relation(fields: [branchId], references: [id])
 }
 
 model Warehouse {
-  id              String            @id
-  name            String
-  isActive        Boolean
-  createdAt       DateTime
-  updatedAt       DateTime
+  id              String            @id @map("id")
+  name            String            @map("name")
+  isActive        Boolean           @map("is_active")
+  createdAt       DateTime          @map("created_at")
+  updatedAt       DateTime          @map("updated_at")
   company         Company           @relation(fields: [companyId], references: [id])
-  companyId       String
+  companyId       String            @map("company_id")
   BranchWarehouse BranchWarehouse[]
   Stock           Stock[]
 }
 
 model BranchWarehouse {
-  id          String    @id
-  isActive    Boolean
-  warehouseId String
+  id          String    @id @map("id")
+  isActive    Boolean   @map("is_active")
+  warehouseId String    @map("warehouse_id")
   warehouse   Warehouse @relation(fields: [warehouseId], references: [id])
-  branchId    String
+  branchId    String    @map("branch_id")
   branch      Branch    @relation(fields: [branchId], references: [id])
 }
 
 model Product {
-  id          String   @id
-  name        String
-  description String
-  isActive    Boolean
-  createdAt   DateTime
-  updatedAt   DateTime
+  id          String        @id @map("id")
+  name        String        @map("name")
+  description String        @map("description")
+  isActive    Boolean       @map("is_active")
+  createdAt   DateTime      @map("created_at")
+  updatedAt   DateTime      @map("updated_at")
   sku         SKU[]
-  companyId   String
-  company     Company  @relation(fields: [companyId], references: [id])
+  companyId   String        @map("company_id")
+  company     Company       @relation(fields: [companyId], references: [id])
+  InvoiceItem InvoiceItem[]
 }
 
 model SKU {
-  id            String         @id
-  code          String
-  createdAt     DateTime
-  updatedAt     DateTime
+  id            String         @id @map("id")
+  code          String         @map("code")
+  createdAt     DateTime       @map("created_at")
+  updatedAt     DateTime       @map("updated_at")
   skuAttributes SkuAttribute[]
-  productId     String
+  productId     String         @map("product_id")
   product       Product        @relation(fields: [productId], references: [id])
   OrderItem     OrderItem[]
   Stock         Stock[]
@@ -156,21 +157,21 @@ model SKU {
 }
 
 model Attribute {
-  id        String   @id
-  name      String
-  createdAt DateTime
-  updatedAt DateTime
+  id        String   @id @map("id")
+  name      String   @map("name")
+  createdAt DateTime @map("created_at")
+  updatedAt DateTime @map("updated_at")
   Option    Option[]
   company   Company  @relation(fields: [companyId], references: [id])
-  companyId String
+  companyId String   @map("company_id")
 }
 
 model Option {
-  id           String         @id
-  name         String
-  createdAt    DateTime
-  updatedAt    DateTime
-  attributeId  String?
+  id           String         @id @map("id")
+  name         String         @map("name")
+  createdAt    DateTime       @map("created_at")
+  updatedAt    DateTime       @map("updated_at")
+  attributeId  String?        @map("attribute_id")
   attribute    Attribute?     @relation(fields: [attributeId], references: [id])
   skuAttribute SkuAttribute[]
 }
@@ -181,35 +182,35 @@ enum ESkuAttributeType {
 }
 
 model SkuAttribute {
-  id        String            @id
-  createdAt DateTime
-  updatedAt DateTime
-  optionId  String
+  id        String            @id @map("id")
+  createdAt DateTime          @map("created_at")
+  updatedAt DateTime          @map("updated_at")
+  optionId  String            @map("option_id")
   option    Option            @relation(fields: [optionId], references: [id])
-  type      ESkuAttributeType
-  skuId     String
+  type      ESkuAttributeType @map("type")
+  skuId     String            @map("sku_id")
   sku       SKU               @relation(fields: [skuId], references: [id])
 }
 
 model Stock {
-  id          String    @id
-  amount      Int
-  createdAt   DateTime
-  updatedAt   DateTime
+  id          String    @id @map("id")
+  amount      Int       @map("amount")
+  createdAt   DateTime  @map("created_at")
+  updatedAt   DateTime  @map("updated_at")
   warehouse   Warehouse @relation(fields: [warehouseId], references: [id])
-  warehouseId String
+  warehouseId String    @map("warehouse_id")
   sku         SKU       @relation(fields: [skuId], references: [id])
-  skuId       String
+  skuId       String    @map("sku_id")
 }
 
 model Price {
-  id               String   @id
-  value            Decimal
-  promotionalValue Decimal
-  createdAt        DateTime
-  updatedAt        DateTime
+  id               String   @id @map("id")
+  value            Decimal  @map("value")
+  promotionalValue Decimal  @map("promotional_value")
+  createdAt        DateTime @map("created_at")
+  updatedAt        DateTime @map("updated_at")
   Sku              SKU      @relation(fields: [skuId], references: [id])
-  skuId            String
+  skuId            String   @map("sku_id")
 }
 
 enum EOrderStatus {
@@ -231,49 +232,49 @@ enum EOrderPaymentMethod {
 }
 
 model Order {
-  id             String              @id
-  issuedAt       DateTime
-  status         EOrderStatus
-  method         EOrderPaymentMethod
-  total          Decimal
-  subtotal       Decimal
-  discount       Decimal
-  freight        Decimal
-  payable_amount Decimal
-  createdAt      DateTime
-  updatedAt      DateTime
-  orderItems     OrderItem[]
-  shipments      Shipment            @relation(fields: [shipmentId], references: [id])
-  shipmentId     String              @unique
-  location       Location            @relation(fields: [locationId], references: [id])
-  locationId     String
-  branch         Branch              @relation(fields: [branchId], references: [id])
-  branchId       String
-  customer       Customer            @relation(fields: [customerId], references: [id])
-  customerId     String
-  Installment    Installment[]
+  id            String              @id @map("id")
+  issuedAt      DateTime            @map("issued_at")
+  status        EOrderStatus        @map("status")
+  method        EOrderPaymentMethod @map("method")
+  total         Decimal             @map("total")
+  subtotal      Decimal             @map("subtotal")
+  discount      Decimal             @map("discount")
+  freight       Decimal             @map("freight")
+  payableAmount Decimal             @map("payable_amount")
+  createdAt     DateTime            @map("created_at")
+  updatedAt     DateTime            @map("updated_at")
+  orderItems    OrderItem[]
+  shipments     Shipment            @relation(fields: [shipmentId], references: [id])
+  shipmentId    String              @unique @map("shipment_id")
+  location      Location            @relation(fields: [locationId], references: [id])
+  locationId    String              @map("location_id")
+  branch        Branch              @relation(fields: [branchId], references: [id])
+  branchId      String              @map("branch_id")
+  customer      Customer            @relation(fields: [customerId], references: [id])
+  customerId    String              @map("customer_id")
+  Installment   Installment[]
 }
 
 model OrderItem {
-  id        String   @id
-  quantity  Int
-  price     Decimal
-  discount  Decimal
-  name      String
-  skuId     String
-  createdAt DateTime
-  updatedAt DateTime
+  id        String   @id @map("id")
+  quantity  Int      @map("quantity")
+  price     Decimal  @map("price")
+  discount  Decimal  @map("discount")
+  name      String   @map("name")
+  skuId     String   @map("sku_id")
+  createdAt DateTime @map("created_at")
+  updatedAt DateTime @map("updated_at")
   sku       SKU      @relation(fields: [skuId], references: [id])
   Order     Order    @relation(fields: [orderId], references: [id])
-  orderId   String
+  orderId   String   @map("order_id")
 }
 
 model Shipment {
-  id              String            @id
-  freight         Decimal
-  discount        Decimal
-  createdAt       DateTime
-  updatedAt       DateTime
+  id              String            @id @map("id")
+  freight         Decimal           @map("freight")
+  discount        Decimal           @map("discount")
+  createdAt       DateTime          @map("created_at")
+  updatedAt       DateTime          @map("updated_at")
   ShipmentAttempt ShipmentAttempt[]
   Order           Order?
 }
@@ -285,73 +286,50 @@ enum EShipmentAttempt {
 }
 
 model ShipmentAttempt {
-  id         String           @id
-  createdAt  DateTime
-  updatedAt  DateTime
-  status     EShipmentAttempt
-  shipment   Shipment         @relation(fields: [shipmentId], references: [id])
-  shipmentId String
-}
-
-enum EInstallmentStatus {
-  WAITING
-  OVERDUE
-  PAID
-}
-
-model Installment {
-  id        String             @id
-  number    Int
-  dueDate   DateTime
-  amount    Decimal
-  createdAt DateTime
-  updatedAt DateTime
-  status    EInstallmentStatus
-  orderId   String?
-  Order     Order?             @relation(fields: [orderId], references: [id])
-  invoiceId String?
-  Invoice   Invoice?           @relation(fields: [invoiceId], references: [id])
-}
-
-enum EInvoiceMethod {
-  PIX
-  DEBIT
-  CREDIT
-}
-
-enum EInvoiceStatus {
-  OPENED
-  PAID
-  OVERDUE
+  id         String           @id @map("id")
+  createdAt  DateTime         @map("created_at")
+  updatedAt  DateTime         @map("updated_at")
+  status     EShipmentAttempt @map("status")
+  shipmentId String           @map("shipment_id")
+  Shipment   Shipment         @relation(fields: [shipmentId], references: [id])
 }
 
 model Invoice {
-  id            String         @id
-  number        String         @unique
-  dateIssued    DateTime
-  dueDate       DateTime
-  reference     String
-  method        EInvoiceMethod
-  status        EInvoiceStatus
-  totalAmount   Decimal
-  paidAmount    Decimal
-  discount      Decimal
-  payableAmount Decimal
-  createdAt     DateTime
-  updatedAt     DateTime
-  installments  Installment[]
-  supplier      Supplier       @relation(fields: [supplierId], references: [id])
-  supplierId    String
+  id            String        @id @map("id")
+  number        String        @map("number")
+  issueDate     DateTime      @map("issue_date")
+  totalValue    Decimal       @map("total_value")
+  paymentDate   DateTime?     @map("payment_date")
+  paymentMethod String?       @map("payment_method")
+  status        String        @map("status")
+  createdAt     DateTime      @map("created_at")
+  updatedAt     DateTime      @map("updated_at")
+  supplierId    String        @map("supplier_id")
+  supplier      Supplier      @relation(fields: [supplierId], references: [id])
+  InvoiceItem   InvoiceItem[]
 }
 
 model InvoiceItem {
-  id        String   @id
-  price     Decimal
-  discount  Decimal
-  name      String
-  code      String
-  createdAt DateTime
-  updatedAt DateTime
-  sku       SKU      @relation(fields: [skuId], references: [id])
-  skuId     String
+  id        String   @id @map("id")
+  quantity  Int      @map("quantity")
+  price     Decimal  @map("price")
+  createdAt DateTime @map("created_at")
+  updatedAt DateTime @map("updated_at")
+  productId String   @map("product_id")
+  product   Product  @relation(fields: [productId], references: [id])
+  invoiceId String   @map("invoice_id")
+  invoice   Invoice  @relation(fields: [invoiceId], references: [id])
+  SKU       SKU?     @relation(fields: [sKUId], references: [id])
+  sKUId     String?
+}
+
+model Installment {
+  id        String   @id @map("id")
+  quantity  Int      @map("quantity")
+  value     Decimal  @map("value")
+  dueDate   DateTime @map("due_date")
+  createdAt DateTime @map("created_at")
+  updatedAt DateTime @map("updated_at")
+  orderId   String   @map("order_id")
+  order     Order    @relation(fields: [orderId], references: [id])
 }
