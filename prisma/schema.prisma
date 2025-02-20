@@ -1,0 +1,357 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id           String         @id
+  companyId    String?
+  BoardMembers BoardMembers[]
+  Customer     Customer[]
+}
+
+model Customer {
+  id         String   @id
+  firstName  String
+  lastName   String
+  phone      String
+  email      String
+  avatar     String
+  location   Location @relation(fields: [locationId], references: [id])
+  user       User?    @relation(fields: [userId], references: [id])
+  userId     String?
+  locationId String
+  createdAt  DateTime
+  updatedAt  DateTime
+  Order      Order[]
+}
+
+model Address {
+  id           String     @id
+  street       String
+  number       String
+  neighborhood String
+  city         String
+  country      String
+  createdAt    DateTime
+  location     Location[]
+}
+
+model Location {
+  id         String     @id
+  complement String?
+  number     String
+  addressId  String
+  createdAt  DateTime
+  updatedAt  DateTime
+  addresses  Address    @relation(fields: [addressId], references: [id])
+  branchId   String?
+  Branch     Branch?
+  Customer   Customer[]
+  Order      Order[]
+}
+
+model Supplier {
+  id        String    @id
+  name      String
+  createdAt DateTime
+  updatedAt DateTime
+  companyId String
+  company   Company   @relation(fields: [companyId], references: [id])
+  Invoice   Invoice[]
+}
+
+model Company {
+  id           String         @id
+  name         String
+  createdAt    DateTime
+  updatedAt    DateTime
+  supplier     Supplier[]
+  branches     Branch[]
+  BoardMembers BoardMembers[]
+  Warehouse    Warehouse[]
+  Product      Product[]
+  Attribute    Attribute[]
+}
+
+model Branch {
+  id              String            @id
+  name            String
+  phone           String
+  location        Location          @relation(fields: [locationId], references: [id])
+  locationId      String            @unique
+  companyId       String
+  isActive        Boolean
+  createdAt       DateTime
+  updatedAt       DateTime
+  company         Company           @relation(fields: [companyId], references: [id])
+  BoardMembers    BoardMembers[]
+  BranchWarehouse BranchWarehouse[]
+  Order           Order[]
+}
+
+model BoardMembers {
+  id        String   @id
+  userId    String
+  isActive  Boolean
+  createdAt DateTime
+  updatedAt DateTime
+  user      User     @relation(fields: [userId], references: [id])
+  companyId String
+  company   Company  @relation(fields: [companyId], references: [id])
+  branchId  String
+  branch    Branch   @relation(fields: [branchId], references: [id])
+}
+
+model Warehouse {
+  id              String            @id
+  name            String
+  isActive        Boolean
+  createdAt       DateTime
+  updatedAt       DateTime
+  company         Company           @relation(fields: [companyId], references: [id])
+  companyId       String
+  BranchWarehouse BranchWarehouse[]
+  Stock           Stock[]
+}
+
+model BranchWarehouse {
+  id          String    @id
+  isActive    Boolean
+  warehouseId String
+  warehouse   Warehouse @relation(fields: [warehouseId], references: [id])
+  branchId    String
+  branch      Branch    @relation(fields: [branchId], references: [id])
+}
+
+model Product {
+  id          String   @id
+  name        String
+  description String
+  isActive    Boolean
+  createdAt   DateTime
+  updatedAt   DateTime
+  sku         SKU[]
+  companyId   String
+  company     Company  @relation(fields: [companyId], references: [id])
+}
+
+model SKU {
+  id            String         @id
+  code          String
+  createdAt     DateTime
+  updatedAt     DateTime
+  skuAttributes SkuAttribute[]
+  productId     String
+  product       Product        @relation(fields: [productId], references: [id])
+  OrderItem     OrderItem[]
+  Stock         Stock[]
+  Price         Price[]
+  InvoiceItem   InvoiceItem[]
+}
+
+model Attribute {
+  id        String   @id
+  name      String
+  createdAt DateTime
+  updatedAt DateTime
+  Option    Option[]
+  company   Company  @relation(fields: [companyId], references: [id])
+  companyId String
+}
+
+model Option {
+  id           String         @id
+  name         String
+  createdAt    DateTime
+  updatedAt    DateTime
+  attributeId  String?
+  attribute    Attribute?     @relation(fields: [attributeId], references: [id])
+  skuAttribute SkuAttribute[]
+}
+
+enum ESkuAttributeType {
+  VARIATION
+  TECHNICAL
+}
+
+model SkuAttribute {
+  id        String            @id
+  createdAt DateTime
+  updatedAt DateTime
+  optionId  String
+  option    Option            @relation(fields: [optionId], references: [id])
+  type      ESkuAttributeType
+  skuId     String
+  sku       SKU               @relation(fields: [skuId], references: [id])
+}
+
+model Stock {
+  id          String    @id
+  amount      Int
+  createdAt   DateTime
+  updatedAt   DateTime
+  warehouse   Warehouse @relation(fields: [warehouseId], references: [id])
+  warehouseId String
+  sku         SKU       @relation(fields: [skuId], references: [id])
+  skuId       String
+}
+
+model Price {
+  id               String   @id
+  value            Decimal
+  promotionalValue Decimal
+  createdAt        DateTime
+  updatedAt        DateTime
+  Sku              SKU      @relation(fields: [skuId], references: [id])
+  skuId            String
+}
+
+enum EOrderStatus {
+  PENDING
+  APPROVED
+  SHIPPED
+  DELIVERED
+  DELIVER_FAIL
+  CANCELLED
+  DECLINED
+  REFUNDED
+  COMPLETED
+}
+
+enum EOrderPaymentMethod {
+  PIX
+  DEBIT
+  CREDIT
+}
+
+model Order {
+  id             String              @id
+  issuedAt       DateTime
+  status         EOrderStatus
+  method         EOrderPaymentMethod
+  total          Decimal
+  subtotal       Decimal
+  discount       Decimal
+  freight        Decimal
+  payable_amount Decimal
+  createdAt      DateTime
+  updatedAt      DateTime
+  orderItems     OrderItem[]
+  shipments      Shipment            @relation(fields: [shipmentId], references: [id])
+  shipmentId     String              @unique
+  location       Location            @relation(fields: [locationId], references: [id])
+  locationId     String
+  branch         Branch              @relation(fields: [branchId], references: [id])
+  branchId       String
+  customer       Customer            @relation(fields: [customerId], references: [id])
+  customerId     String
+  Installment    Installment[]
+}
+
+model OrderItem {
+  id        String   @id
+  quantity  Int
+  price     Decimal
+  discount  Decimal
+  name      String
+  skuId     String
+  createdAt DateTime
+  updatedAt DateTime
+  sku       SKU      @relation(fields: [skuId], references: [id])
+  Order     Order    @relation(fields: [orderId], references: [id])
+  orderId   String
+}
+
+model Shipment {
+  id              String            @id
+  freight         Decimal
+  discount        Decimal
+  createdAt       DateTime
+  updatedAt       DateTime
+  ShipmentAttempt ShipmentAttempt[]
+  Order           Order?
+}
+
+enum EShipmentAttempt {
+  WAITING
+  IN_ROUTE
+  FINISHED
+}
+
+model ShipmentAttempt {
+  id         String           @id
+  createdAt  DateTime
+  updatedAt  DateTime
+  status     EShipmentAttempt
+  shipment   Shipment         @relation(fields: [shipmentId], references: [id])
+  shipmentId String
+}
+
+enum EInstallmentStatus {
+  WAITING
+  OVERDUE
+  PAID
+}
+
+model Installment {
+  id        String             @id
+  number    Int
+  dueDate   DateTime
+  amount    Decimal
+  createdAt DateTime
+  updatedAt DateTime
+  status    EInstallmentStatus
+  orderId   String?
+  Order     Order?             @relation(fields: [orderId], references: [id])
+  invoiceId String?
+  Invoice   Invoice?           @relation(fields: [invoiceId], references: [id])
+}
+
+enum EInvoiceMethod {
+  PIX
+  DEBIT
+  CREDIT
+}
+
+enum EInvoiceStatus {
+  OPENED
+  PAID
+  OVERDUE
+}
+
+model Invoice {
+  id            String         @id
+  number        String         @unique
+  dateIssued    DateTime
+  dueDate       DateTime
+  reference     String
+  method        EInvoiceMethod
+  status        EInvoiceStatus
+  totalAmount   Decimal
+  paidAmount    Decimal
+  discount      Decimal
+  payableAmount Decimal
+  createdAt     DateTime
+  updatedAt     DateTime
+  installments  Installment[]
+  supplier      Supplier       @relation(fields: [supplierId], references: [id])
+  supplierId    String
+}
+
+model InvoiceItem {
+  id        String   @id
+  price     Decimal
+  discount  Decimal
+  name      String
+  code      String
+  createdAt DateTime
+  updatedAt DateTime
+  sku       SKU      @relation(fields: [skuId], references: [id])
+  skuId     String
+}
