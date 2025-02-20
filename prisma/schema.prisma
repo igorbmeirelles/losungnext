@@ -129,6 +129,15 @@ model BranchWarehouse {
   branch      Branch    @relation(fields: [branchId], references: [id])
 }
 
+model Category {
+  id       String     @id
+  name     String
+  parentId String     @default("") @map("parent_id")
+  parent   Category?  @relation("CategoryParent", fields: [parentId], references: [id])
+  children Category[] @relation("CategoryParent")
+  Product  Product[]
+}
+
 model Product {
   id          String        @id @map("id")
   name        String        @map("name")
@@ -137,6 +146,8 @@ model Product {
   createdAt   DateTime      @map("created_at")
   updatedAt   DateTime      @map("updated_at")
   sku         SKU[]
+  category    Category      @relation(fields: [categoryId], references: [id])
+  categoryId  String
   companyId   String        @map("company_id")
   company     Company       @relation(fields: [companyId], references: [id])
   InvoiceItem InvoiceItem[]
