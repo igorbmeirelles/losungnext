@@ -15,6 +15,26 @@ model User {
   companyId    String?        @map("company_id")
   BoardMembers BoardMembers[]
   Customer     Customer[]
+  UserRoles    UserRoles[]
+}
+
+enum EUserRoles {
+  ROOT
+  OWNER
+  ADMIN
+  SELLER
+  STOCK_ADMIN
+  STOCK_DISPATCHER
+  DRIVER
+}
+
+model UserRoles {
+  id     BigInt     @id @default(dbgenerated())
+  user   User       @relation(fields: [userId], references: [id])
+  userId String     @db.Uuid @map("user_id")
+  role   EUserRoles
+
+  @@unique([userId, role])
 }
 
 model Customer {
