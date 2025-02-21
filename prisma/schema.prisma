@@ -9,14 +9,14 @@ datasource db {
 }
 
 model User {
-  id           String         @id @map("id")
+  id           String         @id @db.Uuid @map("id") @default(uuid())
   companyId    String?        @map("company_id")
   BoardMembers BoardMembers[]
   Customer     Customer[]
 }
 
 model Customer {
-  id         String   @id @map("id")
+  id         String   @id @default(ulid()) @map("id")
   firstName  String   @map("first_name")
   lastName   String   @map("last_name")
   phone      String   @map("phone")
@@ -24,7 +24,7 @@ model Customer {
   avatar     String   @map("avatar")
   location   Location @relation(fields: [locationId], references: [id])
   user       User?    @relation(fields: [userId], references: [id])
-  userId     String?  @map("user_id")
+  userId     String?  @map("user_id") @db.Uuid
   locationId String   @map("location_id")
   createdAt  DateTime @map("created_at")
   updatedAt  DateTime @map("updated_at")
@@ -32,7 +32,7 @@ model Customer {
 }
 
 model Address {
-  id           String     @id @map("id")
+  id           String     @id @default(ulid()) @map("id")
   street       String     @map("street")
   number       String     @map("number")
   neighborhood String     @map("neighborhood")
@@ -43,7 +43,7 @@ model Address {
 }
 
 model Location {
-  id         String     @id @map("id")
+  id         String     @id @default(ulid()) @map("id")
   complement String?    @map("complement")
   number     String     @map("number")
   addressId  String     @map("address_id")
@@ -57,7 +57,7 @@ model Location {
 }
 
 model Supplier {
-  id        String    @id @map("id")
+  id        String    @id @default(ulid()) @map("id")
   name      String    @map("name")
   createdAt DateTime  @map("created_at")
   updatedAt DateTime  @map("updated_at")
@@ -67,7 +67,7 @@ model Supplier {
 }
 
 model Company {
-  id           String         @id @map("id")
+  id           String         @id @default(ulid()) @map("id")
   name         String         @map("name")
   createdAt    DateTime       @map("created_at")
   updatedAt    DateTime       @map("updated_at")
@@ -81,7 +81,7 @@ model Company {
 }
 
 model Branch {
-  id              String            @id @map("id")
+  id              String            @id @default(ulid()) @map("id")
   name            String            @map("name")
   phone           String            @map("phone")
   location        Location          @relation(fields: [locationId], references: [id])
@@ -97,12 +97,12 @@ model Branch {
 }
 
 model BoardMembers {
-  id        String   @id @map("id")
-  userId    String   @map("user_id")
+  id        String   @id @default(ulid()) @map("id")
   isActive  Boolean  @map("is_active")
   createdAt DateTime @map("created_at")
   updatedAt DateTime @map("updated_at")
   user      User     @relation(fields: [userId], references: [id])
+  userId    String   @map("user_id") @db.Uuid
   companyId String   @map("company_id")
   company   Company  @relation(fields: [companyId], references: [id])
   branchId  String   @map("branch_id")
@@ -110,7 +110,7 @@ model BoardMembers {
 }
 
 model Warehouse {
-  id              String            @id @map("id")
+  id              String            @id @default(ulid()) @map("id")
   name            String            @map("name")
   isActive        Boolean           @map("is_active")
   createdAt       DateTime          @map("created_at")
@@ -122,7 +122,7 @@ model Warehouse {
 }
 
 model BranchWarehouse {
-  id          String    @id @map("id")
+  id          String    @id @default(ulid()) @map("id")
   isActive    Boolean   @map("is_active")
   warehouseId String    @map("warehouse_id")
   warehouse   Warehouse @relation(fields: [warehouseId], references: [id])
@@ -131,7 +131,7 @@ model BranchWarehouse {
 }
 
 model Category {
-  id        String     @id
+  id        String     @id @default(ulid())
   name      String
   parentId  String     @default("") @map("parent_id")
   parent    Category?  @relation("CategoryParent", fields: [parentId], references: [id])
@@ -142,7 +142,7 @@ model Category {
 }
 
 model Product {
-  id          String        @id @map("id")
+  id          String        @id @default(ulid()) @map("id")
   name        String        @map("name")
   description String        @map("description")
   isActive    Boolean       @map("is_active")
@@ -157,7 +157,7 @@ model Product {
 }
 
 model SKU {
-  id            String         @id @map("id")
+  id            String         @id @default(ulid()) @map("id")
   code          String         @map("code")
   createdAt     DateTime       @map("created_at")
   updatedAt     DateTime       @map("updated_at")
@@ -171,7 +171,7 @@ model SKU {
 }
 
 model Attribute {
-  id        String   @id @map("id")
+  id        String   @id @default(ulid()) @map("id")
   name      String   @map("name")
   createdAt DateTime @map("created_at")
   updatedAt DateTime @map("updated_at")
@@ -181,7 +181,7 @@ model Attribute {
 }
 
 model Option {
-  id           String         @id @map("id")
+  id           String         @id @default(ulid()) @map("id")
   name         String         @map("name")
   createdAt    DateTime       @map("created_at")
   updatedAt    DateTime       @map("updated_at")
@@ -196,7 +196,7 @@ enum ESkuAttributeType {
 }
 
 model SkuAttribute {
-  id        String            @id @map("id")
+  id        String            @id @default(ulid()) @map("id")
   createdAt DateTime          @map("created_at")
   updatedAt DateTime          @map("updated_at")
   optionId  String            @map("option_id")
@@ -207,7 +207,7 @@ model SkuAttribute {
 }
 
 model Stock {
-  id          String    @id @map("id")
+  id          String    @id @default(ulid()) @map("id")
   amount      Int       @map("amount")
   createdAt   DateTime  @map("created_at")
   updatedAt   DateTime  @map("updated_at")
@@ -218,7 +218,7 @@ model Stock {
 }
 
 model Price {
-  id               String   @id @map("id")
+  id               String   @id @default(ulid()) @map("id")
   value            Decimal  @map("value")
   promotionalValue Decimal  @map("promotional_value")
   createdAt        DateTime @map("created_at")
@@ -246,7 +246,7 @@ enum EOrderPaymentMethod {
 }
 
 model Order {
-  id            String              @id @map("id")
+  id            String              @id @default(ulid()) @map("id")
   issuedAt      DateTime            @map("issued_at")
   status        EOrderStatus        @map("status")
   method        EOrderPaymentMethod @map("method")
@@ -270,7 +270,7 @@ model Order {
 }
 
 model OrderItem {
-  id        String   @id @map("id")
+  id        String   @id @default(ulid()) @map("id")
   quantity  Int      @map("quantity")
   price     Decimal  @map("price")
   discount  Decimal  @map("discount")
@@ -284,7 +284,7 @@ model OrderItem {
 }
 
 model Shipment {
-  id              String            @id @map("id")
+  id              String            @id @default(ulid()) @map("id")
   freight         Decimal           @map("freight")
   discount        Decimal           @map("discount")
   createdAt       DateTime          @map("created_at")
@@ -300,7 +300,7 @@ enum EShipmentAttempt {
 }
 
 model ShipmentAttempt {
-  id         String           @id @map("id")
+  id         String           @id @default(ulid()) @map("id")
   createdAt  DateTime         @map("created_at")
   updatedAt  DateTime         @map("updated_at")
   status     EShipmentAttempt @map("status")
@@ -309,7 +309,7 @@ model ShipmentAttempt {
 }
 
 model Invoice {
-  id            String        @id @map("id")
+  id            String        @id @default(ulid()) @map("id")
   number        String        @map("number")
   issueDate     DateTime      @map("issue_date")
   totalValue    Decimal       @map("total_value")
@@ -324,7 +324,7 @@ model Invoice {
 }
 
 model InvoiceItem {
-  id        String   @id @map("id")
+  id        String   @id @default(ulid()) @map("id")
   quantity  Int      @map("quantity")
   price     Decimal  @map("price")
   createdAt DateTime @map("created_at")
@@ -338,7 +338,7 @@ model InvoiceItem {
 }
 
 model Installment {
-  id        String   @id @map("id")
+  id        String   @id @default(ulid()) @map("id")
   quantity  Int      @map("quantity")
   value     Decimal  @map("value")
   dueDate   DateTime @map("due_date")
